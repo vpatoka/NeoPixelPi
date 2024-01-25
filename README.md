@@ -66,7 +66,6 @@ Once it reboots, the connection will close. After a couple of minutes, you can r
 
 The script will automatically enable I2C and SPI. You can run the following command to verify:
 
-[ Copy Text](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi#)
 
 ```
 ls /dev/i2c* /dev/spi*
