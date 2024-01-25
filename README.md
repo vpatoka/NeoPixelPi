@@ -162,7 +162,7 @@ To make live easier, we have to create custom service to run it every time we bo
 
 - `systemctl enable led_controller.service`
 
-- `systemctl enable led_controller.service`
+- `systemctl start led_controller.service`
 
   
 
