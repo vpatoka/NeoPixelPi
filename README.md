@@ -128,6 +128,7 @@ As Adafruit_Blinka library has been installed, it is time to install NeoPixel:
   
 
 If all this steps are done, we could connect WS281x strip to Raspberry PI, using +5V and Ground pins for the power and Pin D18 for Data
+
 *(!)* NOTE - We have to use LED Signal Amplifier to avoid direct connection of LED to Raspberry PI. I am using `SP901E` model.
 
 There is few effects included to the code. Also it has a logic to start the show 30 minutes after sunset and stop it 30 minutes before the sunrise.
