@@ -6,9 +6,7 @@
 
 # NeoPixels on Raspberry Pi
 
-# Credits to https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/ 
-
-# Made by me, Vlad, just for fun
+# See https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/ 
 
 import time
 import board
@@ -33,6 +31,7 @@ num_pixels = 420
 # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed!
 # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW.
 ORDER = neopixel.GRB
+#ORDER = neopixel.RGB
 
 # Colors
 RED = (255, 0, 0)
@@ -376,8 +375,8 @@ def Fire(Cooling, Sparking, SpeedDelay):
 
 try:
 
-  latitude = 75.0
-  longitude = 0
+  latitude = 45.26886663548439
+  longitude = -75.27623677331822
   sun = Sun(latitude, longitude)
   current_month_day = datetime.now().strftime('%m-%d')
 
@@ -392,7 +391,7 @@ try:
     now = datetime.now().astimezone()
 
     # Run only if time is 30 minute before sunrise and 30 minutes afetr sunset
-    if ((today_sr - timedelta(minutes=30)) < now < (today_ss + timedelta(minutes=30))):
+    if ((today_sr - timedelta(minutes=30)) < now < (today_ss + timedelta(minutes=1470))):
       pixels.fill((0, 0, 0)) # All black - not time to iluminate
     else:
       match current_month_day:
@@ -427,5 +426,3 @@ try:
 
 except KeyboardInterrupt as e:
   logging.info("Stopping...")
-
-
