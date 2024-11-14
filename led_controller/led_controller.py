@@ -384,14 +384,17 @@ try:
   pixels.show()
 
   while True:
-
+    
     today_sr = sun.get_sunrise_time().astimezone()
     today_ss = sun.get_sunset_time().astimezone()
 
     now = datetime.now().astimezone()
 
-    # Run only if time is 30 minute before sunrise and 30 minutes afetr sunset
-    if ((today_sr - timedelta(minutes=30)) < now < (today_ss + timedelta(minutes=1470))):
+    sr_ut = time.mktime(today_sr.timetuple()) - 1800.0
+    ss_ut = time.mktime(today_ss.timetuple()) + 1800.0
+    now_ut = time.mktime(now.timetuple())
+
+    if (now_ut < ss_ut and now_ut > sr_ut):
       pixels.fill((0, 0, 0)) # All black - not time to iluminate
     else:
       match current_month_day:
