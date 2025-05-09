@@ -374,58 +374,85 @@ def Fire(Cooling, Sparking, SpeedDelay):
 # Main loop
 
 try:
+    latitude = 45.26886663548439
+    longitude = -75.27623677331822
+    sun = Sun(latitude, longitude)
 
-  latitude = 45.26886663548439
-  longitude = -75.27623677331822
-  sun = Sun(latitude, longitude)
-  current_month_day = datetime.now().strftime('%m-%d')
+    flag = 0
+    while True:
+        # Get current date and time
+        now = datetime.now().astimezone()
+        today = now.date()
+        current_month_day = datetime.now().strftime('%m-%d')
+        
+        # Get sunrise and sunset for today
+        try:
+            today_sr = sun.get_sunrise_time(today).astimezone()
+            today_ss = sun.get_sunset_time(today).astimezone()
+            
+            # Calculate 30 minutes before sunrise and 30 minutes after sunset
+            show_start = today_ss + timedelta(minutes=30)
+            show_end = today_sr - timedelta(minutes=30)
 
-  pixels.fill((0,0,0))
-  pixels.show()
+            # Debug prints
+            print(f"Now: {now}")
+            print(f"Today's sunrise: {today_sr}")
+            print(f"Today's sunset: {today_ss}")
+            print(f"Show start (30min after sunset): {show_start}")
+            print(f"Show end (30min before sunrise): {show_end}")
 
-  while True:
-    
-    today_sr = sun.get_sunrise_time().astimezone()
-    today_ss = sun.get_sunset_time().astimezone()
+            # Handle the case where show period spans across midnight
+            if show_start.date() < now.date():  # Show start is from yesterday
+              if now >= show_start or now <= show_end:
+                flag = 1
+              else:
+                flag = 0
+            else:  # Normal case where both times are within today
+              if show_start <= now <= show_end:
+                flag = 1
+              else:
+                flag = 0 
+        except SunTimeException as e:
+            print(f"Error getting sun times: {e}")
+            flag = 0
+            #print("No Show")
+        
+        # Check flag
+        if flag:
+          print("Show On")
+          match current_month_day:
+            case '12-15'|'12-16'|'12-17'|'12-18'|'12-19'|'12-20'|'12-21'|'12-22'|'12-23'|'12-26'|'12-27'|'12-28'|'12-29'|'12-30':
+              holiday()
+            case '01-02'|'01-03'|'01-04'|'01-05'|'01-06'|'01-07'|'01-08'|'10-12'|'10-13'|'10-14':
+              holiday()
+            case '12-24'|'12-25'|'12-31'|'01-01':
+              rainbow_cycle()
+            case '01-31'|'06-15'|'07-30'|'10-26'|'10-15':
+              gradient()
+            case '02-02':
+              knight_rider(RED, 0.05, 8)
+            case '10-31':
+              halloween()
+            case _:
+              #RGBLoop()
+              #CylonBounce(0xff, 0, 0, 4, 0.010, 0.050)
+              #Twinkle(255, 0, 0, 3, 0.100, False) # Width = 3 pixels
+              #TwinkleRandom(2, 0.100, False) # Width = 2 pixels
+              #Sparkle(255,255,255,0)
+              #SnowSparkle(16, 16, 16, 0.020, random.randint(100,1000))
+              RunningLights(0, 255, 0, 0.050)
+              #colorWipe(0, 255, 0, 0.050)
+              #theaterChase(255,0,0,0.050)
+              #theaterChaseRainbow(0.050)
+              #Fire(55,120,0.15)
+              #black_and_white()
+              #holiday()
+        else:
+          print("Show Off")
+          pixels.fill((0, 0, 0)) # All black - not time to iluminate
 
-    now = datetime.now().astimezone()
-
-    sr_ut = time.mktime(today_sr.timetuple()) - 1800.0
-    ss_ut = time.mktime(today_ss.timetuple()) + 1800.0
-    now_ut = time.mktime(now.timetuple())
-
-    if (now_ut < ss_ut and now_ut > sr_ut):
-      pixels.fill((0, 0, 0)) # All black - not time to iluminate
-    else:
-      match current_month_day:
-        case '12-15'|'12-16'|'12-17'|'12-18'|'12-19'|'12-20'|'12-21'|'12-22'|'12-23'|'12-26'|'12-27'|'12-28'|'12-29'|'12-30':
-          holiday()
-        case '01-02'|'01-03'|'01-04'|'01-05'|'01-06'|'01-07'|'01-08':
-          holiday()
-        case '12-24'|'12-25'|'12-31'|'01-01':
-          rainbow_cycle()
-        case '01-31'|'06-15'|'07-30'|'10-26':
-          gradient()
-        case '02-02':
-          knight_rider(RED, 0.05, 8)
-        case '10-31':
-          halloween()
-        case _:
-          #RGBLoop()
-          #CylonBounce(0xff, 0, 0, 4, 0.010, 0.050)
-          #Twinkle(255, 0, 0, 3, 0.100, False) # Width = 3 pixels
-          #TwinkleRandom(2, 0.100, False) # Width = 2 pixels
-          #Sparkle(255,255,255,0)
-          #SnowSparkle(16, 16, 16, 0.020, random.randint(100,1000))
-          #RunningLights(0, 255, 0, 0.050)
-          #colorWipe(0, 255, 0, 0.050)
-          #theaterChase(255,0,0,0.050)
-          #theaterChaseRainbow(0.050)
-          #Fire(55,120,0.15)
-          black_and_white()
-
-    pixels.show()
-    sleep(600)
+        pixels.show()
+        sleep(600)
 
 except KeyboardInterrupt as e:
   logging.info("Stopping...")
