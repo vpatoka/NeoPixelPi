@@ -17,7 +17,7 @@ import math
 import random
 import logging
 from time import sleep
-from datetime import date, datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta, time
 from suntime import Sun, SunTimeException
 
 
@@ -378,44 +378,32 @@ try:
     longitude = -75.27623677331822
     sun = Sun(latitude, longitude)
 
-    flag = 0
     while True:
+        flag = 0
         # Get current date and time
         now = datetime.now().astimezone()
         today = now.date()
+        tomorrow = now + timedelta(hours=24)
+        noon = time(12, 0, 0)
         current_month_day = datetime.now().strftime('%m-%d')
         
         # Get sunrise and sunset for today
         try:
-            today_sr = sun.get_sunrise_time(today).astimezone()
-            today_ss = sun.get_sunset_time(today).astimezone()
-            
-            # Calculate 30 minutes before sunrise and 30 minutes after sunset
-            show_start = today_ss + timedelta(minutes=30)
-            show_end = today_sr - timedelta(minutes=30)
+          ct = now.time()
+          ct_datetime = datetime.combine(now.date(), ct).astimezone()
 
-            # Debug prints
-            print(f"Now: {now}")
-            print(f"Today's sunrise: {today_sr}")
-            print(f"Today's sunset: {today_ss}")
-            print(f"Show start (30min after sunset): {show_start}")
-            print(f"Show end (30min before sunrise): {show_end}")
+          if ct < noon:
+            sunrise_time = sun.get_sunrise_time(today).astimezone() - timedelta(minutes=30)
+            if ct_datetime < sunrise_time:
+              flag = 1
+          else:
+            sunset_time = sun.get_sunset_time(tomorrow).astimezone() + timedelta(minutes=30)
+            if ct_datetime > sunset_time:
+              flag = 1
 
-            # Handle the case where show period spans across midnight
-            if show_start.date() < now.date():  # Show start is from yesterday
-              if now >= show_start or now <= show_end:
-                flag = 1
-              else:
-                flag = 0
-            else:  # Normal case where both times are within today
-              if show_start <= now <= show_end:
-                flag = 1
-              else:
-                flag = 0 
         except SunTimeException as e:
             print(f"Error getting sun times: {e}")
             flag = 0
-            #print("No Show")
         
         # Check flag
         if flag:
